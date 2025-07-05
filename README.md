@@ -29,3 +29,48 @@ $ flutter pub get
 
 # Run
 $ flutter run
+```
+
+---
+
+## :warning: Android Gradle & tflite_v2 Namespace Issue
+
+If you see an error like:
+
+```
+Namespace not specified. Specify a namespace in the module's build file: .../tflite_v2-1.0.0/android/build.gradle
+```
+
+### Solution
+1. Go to:
+   `C:\Users\<your-username>\AppData\Local\Pub\Cache\hosted\pub.dev\tflite_v2-1.0.0\android\build.gradle`
+2. Add this line inside the `android { ... }` block:
+   ```gradle
+   namespace 'sq.flutter.tflite'
+   ```
+3. Save the file and re-run:
+   ```sh
+   flutter clean
+   flutter pub get
+   flutter run
+   ```
+
+> **Note:** This is a temporary fix. If you update or clean your pub cache, you may need to repeat this step. For a permanent solution, fork the package or ask the maintainer to add the namespace property.
+
+---
+
+## :bulb: Troubleshooting
+- Ensure your Android emulator or device is running and accessible.
+- If you see Gradle or Java compatibility errors, update your Gradle version in `android/gradle/wrapper/gradle-wrapper.properties` and plugin versions in `android/settings.gradle`.
+- For camera permission issues, check your AndroidManifest.xml.
+
+## :file_folder: Assets
+- Place your TFLite model and labelmap in the `assets/` directory.
+- Ensure `pubspec.yaml` includes:
+  ```yaml
+  assets:
+    - assets/
+  ```
+
+## License
+This project is for educational purposes.
