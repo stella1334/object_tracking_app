@@ -463,6 +463,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
+import 'package:realtime_obj_detection/firebase_options.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 import 'dart:math';
 import 'services/coordinate_estimation_service.dart'; // Import the service
@@ -847,7 +848,7 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
         imageMean: 127.5,
         imageStd: 127.5,
         numResultsPerClass: 1,
-        threshold: 0.4,
+        threshold: 0.2,
       );
 
       if (recognitions != null && mounted) {
