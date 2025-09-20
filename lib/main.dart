@@ -464,6 +464,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import 'package:realtime_obj_detection/firebase_options.dart';
+import 'package:realtime_obj_detection/services/cloud_services/object_handler.dart';
+import 'package:realtime_obj_detection/utils/throttler.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 import 'dart:math';
 import 'services/coordinate_estimation_service.dart'; // Import the service
@@ -762,6 +764,9 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
   SimpleTracker tracker = SimpleTracker();
   bool show3DInfo = true; // Toggle for showing 3D information
 
+  // Throttler to limit cloud update rate
+  final throttler = Throttler(interval: const Duration(milliseconds: 500));
+
   @override
   void initState() {
     super.initState();
@@ -856,6 +861,12 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
             recognitions,
             MediaQuery.of(context).size.width,
             MediaQuery.of(context).size.height * 0.8);
+
+        throttler.run(() {
+          debugPrint("Uploading data to cloud...");
+          // Your action here
+          ObjectHandler.handleTrackedObjects(trackedObjects);
+        });
 
         setState(() {
           this.recognitions = recognitions;

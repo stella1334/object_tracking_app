@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "349873090928",
+    "project_id": "jedsy-object-visualization",
+    "storage_bucket": "jedsy-object-visualization.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349873090928:android:0c33c99ff88cb76f4b1fb5",
+        "android_client_info": {
+          "package_name": "com.example.fly2map"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCp1va71UiOZ9AhyGogIeqTQWopANxYpk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349873090928:android:465f993ba2a454e34b1fb5",
+        "android_client_info": {
+          "package_name": "com.example.jedsy_object_visualization"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCp1va71UiOZ9AhyGogIeqTQWopANxYpk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349873090928:android:033be939067a8a784b1fb5",
+        "android_client_info": {
+          "package_name": "com.example.realtime_obj_detection"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCp1va71UiOZ9AhyGogIeqTQWopANxYpk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
