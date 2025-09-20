@@ -53,14 +53,14 @@
 //   int nextId = 1;
 //   static const double IOU_THRESHOLD = 0.3;
 //   static const int MAX_FRAMES_WITHOUT_UPDATE = 10;
-  
+
 //   // Only track these specific classes
 //   static const Set<String> ALLOWED_CLASSES = {
 //     'apple',
-//     'orange', 
+//     'orange',
 //     'banana'
 //   };
-  
+
 //   // Predefined colors for different tracks
 //   static const List<Color> TRACK_COLORS = [
 //     Colors.red,
@@ -76,10 +76,10 @@
 //   double calculateIOU(Rect rect1, Rect rect2) {
 //     final intersection = rect1.intersect(rect2);
 //     if (intersection.isEmpty) return 0.0;
-    
+
 //     final intersectionArea = intersection.width * intersection.height;
 //     final union = rect1.width * rect1.height + rect2.width * rect2.height - intersectionArea;
-    
+
 //     return union > 0 ? intersectionArea / union : 0.0;
 //   }
 
@@ -89,14 +89,14 @@
 //       String className = rec["detectedClass"].toString().toLowerCase();
 //       return ALLOWED_CLASSES.contains(className);
 //     }).toList();
-    
+
 //     // Convert filtered recognitions to Rect objects
 //     List<Map<String, dynamic>> detections = filteredRecognitions.map((rec) {
 //       var x = rec["rect"]["x"] * screenW;
 //       var y = rec["rect"]["y"] * screenH;
 //       double w = rec["rect"]["w"] * screenW;
 //       double h = rec["rect"]["h"] * screenH;
-      
+
 //       return {
 //         'rect': Rect.fromLTWH(x, y, w, h),
 //         'class': rec["detectedClass"].toString().toLowerCase(),
@@ -111,13 +111,13 @@
 
 //     // Match detections with existing tracks
 //     List<bool> detectionMatched = List.filled(detections.length, false);
-    
+
 //     for (int i = 0; i < detections.length; i++) {
 //       if (detectionMatched[i]) continue;
-      
+
 //       double bestIOU = 0;
 //       TrackedObject? bestMatch;
-      
+
 //       for (var trackedObj in trackedObjects) {
 //         if (trackedObj.className == detections[i]['class']) {
 //           double iou = calculateIOU(trackedObj.rect, detections[i]['rect']);
@@ -127,7 +127,7 @@
 //           }
 //         }
 //       }
-      
+
 //       if (bestMatch != null) {
 //         // Update existing track
 //         bestMatch.rect = detections[i]['rect'];
@@ -288,11 +288,11 @@
 //       if (recognitions != null && mounted) {
 //         // Update tracker with new detections
 //         List<TrackedObject> updatedTracks = tracker.update(
-//           recognitions, 
-//           MediaQuery.of(context).size.width, 
+//           recognitions,
+//           MediaQuery.of(context).size.width,
 //           MediaQuery.of(context).size.height * 0.8
 //         );
-        
+
 //         setState(() {
 //           this.recognitions = recognitions;
 //           this.trackedObjects = updatedTracks;
@@ -460,17 +460,31 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 import 'dart:math';
 import 'services/coordinate_estimation_service.dart'; // Import the service
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    debugPrint('Firebase initialized successfully');
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+    // App can still run with local data fallback
+  }
+
   runApp(MyApp(cameras: cameras));
 }
 
@@ -499,7 +513,7 @@ class TrackedObject {
   int framesSinceUpdate;
   List<Rect> history;
   Color color;
-  
+
   // 3D positioning data
   double? distance;
   double? horizontalAngle;
@@ -507,7 +521,7 @@ class TrackedObject {
   double? x; // Lateral position
   double? y; // Forward distance
   double? z; // Vertical position
-  
+
   // Screen dimensions for calculation
   double? screenWidth;
   double? screenHeight;
@@ -533,18 +547,18 @@ class TrackedObject {
   // Calculate 3D coordinates using the estimation service
   void calculate3DCoordinates() {
     if (screenWidth == null || screenHeight == null) return;
-    
+
     // Calculate center point of bounding box
     double centerX = rect.left + (rect.width / 2);
     double centerY = rect.top + (rect.height / 2);
-    
+
     // Estimate distance using object height
     distance = CoordinateEstimationService.estimateDistanceFromBbox(
       CoordinateEstimationService.getAssumedHeight(className),
       rect.height,
       screenWidth!,
     );
-    
+
     if (distance != null) {
       // Calculate angles from center of image
       final angles = CoordinateEstimationService.calculateAngles(
@@ -553,32 +567,32 @@ class TrackedObject {
         imageWidthPx: screenWidth!,
         imageHeightPx: screenHeight!,
       );
-      
+
       horizontalAngle = angles.$1;
       verticalAngle = angles.$2;
-      
+
       // Calculate 3D coordinates
       final coords = CoordinateEstimationService.calculateCoordinates3D(
         distance!,
         horizontalAngle!,
         verticalAngle!,
       );
-      
+
       x = coords.$1;
       y = coords.$2;
       z = coords.$3;
     }
   }
-  
+
   // Get formatted position string for display
   String getPositionString() {
     if (distance == null) return "Position: N/A";
-    
+
     return "Dist: ${distance!.toStringAsFixed(2)}m\n"
-           "Angle: ${horizontalAngle!.toStringAsFixed(1)}°\n"
-           "3D: (${x!.toStringAsFixed(2)}, ${y!.toStringAsFixed(2)}, ${z!.toStringAsFixed(2)})";
+        "Angle: ${horizontalAngle!.toStringAsFixed(1)}°\n"
+        "3D: (${x!.toStringAsFixed(2)}, ${y!.toStringAsFixed(2)}, ${z!.toStringAsFixed(2)})";
   }
-  
+
   // Check if 3D coordinates are available
   bool has3DCoordinates() {
     return distance != null && x != null && y != null && z != null;
@@ -591,39 +605,38 @@ class SimpleTracker {
   int nextId = 1;
   static const double IOU_THRESHOLD = 0.3;
   static const int MAX_FRAMES_WITHOUT_UPDATE = 10;
-  
+
   // Only track these specific classes
-  static const Set<String> ALLOWED_CLASSES = {
-    'apple',
-    'orange', 
-    'banana'
-  };
-  
+  static const Set<String> ALLOWED_CLASSES = {'apple', 'orange', 'banana'};
+
   double calculateIOU(Rect rect1, Rect rect2) {
     final intersection = rect1.intersect(rect2);
     if (intersection.isEmpty) return 0.0;
-    
+
     final intersectionArea = intersection.width * intersection.height;
-    final union = rect1.width * rect1.height + rect2.width * rect2.height - intersectionArea;
-    
+    final union = rect1.width * rect1.height +
+        rect2.width * rect2.height -
+        intersectionArea;
+
     return union > 0 ? intersectionArea / union : 0.0;
   }
 
-  List<TrackedObject> update(List<dynamic> recognitions, double screenW, double screenH) {
+  List<TrackedObject> update(
+      List<dynamic> recognitions, double screenW, double screenH) {
     // Filter recognitions to only include allowed classes
     List<dynamic> filteredRecognitions = recognitions.where((rec) {
       String className = rec["detectedClass"].toString().toLowerCase();
-      return ALLOWED_CLASSES.contains(className) && 
-             CoordinateEstimationService.isDistanceSupported(className);
+      return ALLOWED_CLASSES.contains(className) &&
+          CoordinateEstimationService.isDistanceSupported(className);
     }).toList();
-    
+
     // Convert filtered recognitions to Rect objects
     List<Map<String, dynamic>> detections = filteredRecognitions.map((rec) {
       var x = rec["rect"]["x"] * screenW;
       var y = rec["rect"]["y"] * screenH;
       double w = rec["rect"]["w"] * screenW;
       double h = rec["rect"]["h"] * screenH;
-      
+
       return {
         'rect': Rect.fromLTWH(x, y, w, h),
         'class': rec["detectedClass"].toString().toLowerCase(),
@@ -638,13 +651,13 @@ class SimpleTracker {
 
     // Match detections with existing tracks
     List<bool> detectionMatched = List.filled(detections.length, false);
-    
+
     for (int i = 0; i < detections.length; i++) {
       if (detectionMatched[i]) continue;
-      
+
       double bestIOU = 0;
       TrackedObject? bestMatch;
-      
+
       for (var trackedObj in trackedObjects) {
         if (trackedObj.className == detections[i]['class']) {
           double iou = calculateIOU(trackedObj.rect, detections[i]['rect']);
@@ -654,7 +667,7 @@ class SimpleTracker {
           }
         }
       }
-      
+
       if (bestMatch != null) {
         // Update existing track
         bestMatch.rect = detections[i]['rect'];
@@ -664,12 +677,12 @@ class SimpleTracker {
         if (bestMatch.history.length > 5) {
           bestMatch.history.removeAt(0);
         }
-        
+
         // Update screen dimensions and recalculate 3D coordinates
         bestMatch.screenWidth = screenW;
         bestMatch.screenHeight = screenH;
         bestMatch.calculate3DCoordinates();
-        
+
         detectionMatched[i] = true;
       }
     }
@@ -686,7 +699,7 @@ class SimpleTracker {
           screenWidth: screenW,
           screenHeight: screenH,
         );
-        
+
         // Calculate initial 3D coordinates
         newObj.calculate3DCoordinates();
         trackedObjects.add(newObj);
@@ -694,7 +707,8 @@ class SimpleTracker {
     }
 
     // Remove tracks that haven't been updated for too long
-    trackedObjects.removeWhere((obj) => obj.framesSinceUpdate > MAX_FRAMES_WITHOUT_UPDATE);
+    trackedObjects.removeWhere(
+        (obj) => obj.framesSinceUpdate > MAX_FRAMES_WITHOUT_UPDATE);
 
     return trackedObjects;
   }
@@ -838,11 +852,10 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
 
       if (recognitions != null && mounted) {
         List<TrackedObject> updatedTracks = tracker.update(
-          recognitions, 
-          MediaQuery.of(context).size.width, 
-          MediaQuery.of(context).size.height * 0.8
-        );
-        
+            recognitions,
+            MediaQuery.of(context).size.width,
+            MediaQuery.of(context).size.height * 0.8);
+
         setState(() {
           this.recognitions = recognitions;
           this.trackedObjects = updatedTracks;
@@ -926,7 +939,9 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
                     show3DInfo = !show3DInfo;
                   });
                 },
-                icon: Icon(show3DInfo ? Icons.view_in_ar : Icons.view_in_ar_outlined, size: 30),
+                icon: Icon(
+                    show3DInfo ? Icons.view_in_ar : Icons.view_in_ar_outlined,
+                    size: 30),
               ),
             ],
           )
