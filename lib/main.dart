@@ -765,7 +765,7 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
   bool show3DInfo = true; // Toggle for showing 3D information
 
   // Throttler to limit cloud update rate
-  final throttler = Throttler(interval: const Duration(milliseconds: 500));
+  final throttler = Throttler(interval: const Duration(milliseconds: 100));
 
   @override
   void initState() {
@@ -853,7 +853,7 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
         imageMean: 127.5,
         imageStd: 127.5,
         numResultsPerClass: 1,
-        threshold: 0.2,
+        threshold: 0.4,
       );
 
       if (recognitions != null && mounted) {
@@ -862,11 +862,11 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
             MediaQuery.of(context).size.width,
             MediaQuery.of(context).size.height * 0.8);
 
-        throttler.run(() {
-          debugPrint("Uploading data to cloud...");
-          // Your action here
-          ObjectHandler.handleTrackedObjects(trackedObjects);
-        });
+        // throttler.run(() {
+        //   debugPrint("Uploading data to cloud...");
+        //   // Your action here
+        // });
+        ObjectHandler.handleTrackedObjects(trackedObjects);
 
         setState(() {
           this.recognitions = recognitions;

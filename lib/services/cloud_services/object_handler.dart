@@ -22,9 +22,9 @@ class ObjectHandler {
       // TODO: for demo purposes x and y are multiplied by 100
       Position realWorldPosition = LocationService.calculateResultingPosition(
         currentPosition,
-        obj.x != null ? obj.x! * 100 : 0,
-        obj.y != null ? obj.y! * 100 : 0,
-        obj.z != null ? obj.z! * 100 : 0,
+        obj.x != null ? obj.x! * 1000 : 0,
+        obj.y != null ? obj.y! * 1000 : 0,
+        obj.z != null ? obj.z! * 1000 : 0,
       );
 
       debugPrint(
