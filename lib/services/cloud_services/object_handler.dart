@@ -7,6 +7,9 @@ import 'package:realtime_obj_detection/services/cloud_services/cloud_interface.d
 import 'package:realtime_obj_detection/services/cloud_services/fruit_point.dart';
 
 class ObjectHandler {
+  // Random number between 0 and 1000 to differentiate object IDs in demo
+  static int randomId = DateTime.now().millisecondsSinceEpoch % 10000;
+
   static Future<void> handleTrackedObjects(
       List<TrackedObject> trackedObjects) async {
     // Process the list of tracked objects
@@ -22,9 +25,9 @@ class ObjectHandler {
       // TODO: for demo purposes x and y are multiplied by 100
       Position realWorldPosition = LocationService.calculateResultingPosition(
         currentPosition,
-        obj.x != null ? obj.x! * 1000 : 0,
-        obj.y != null ? obj.y! * 1000 : 0,
-        obj.z != null ? obj.z! * 1000 : 0,
+        obj.x != null ? obj.x! * 100 : 0,
+        obj.y != null ? obj.y! * 100 : 0,
+        obj.z != null ? obj.z! * 100 : 0,
       );
 
       debugPrint(
@@ -37,7 +40,7 @@ class ObjectHandler {
 
       final repo = FruitPointRepository();
       await repo.upsertAndAppendPath(FruitPoint(
-          id: '${obj.id} ${obj.className}',
+          id: '$randomId ${obj.id} ${obj.className}',
           name: obj.className,
           icon: obj.className,
           path: cu,
