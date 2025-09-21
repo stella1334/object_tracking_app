@@ -39,13 +39,16 @@ class ObjectHandler {
       ];
 
       final repo = FruitPointRepository();
-      await repo.upsertAndAppendPath(FruitPoint(
-          id: '$randomId ${obj.id} ${obj.className}',
-          name: obj.className,
-          icon: obj.className,
-          path: cu,
-          altitude: realWorldPosition.altitude.toInt(),
-          tracked: DateTime.now()));
+      await repo.upsertAndAppendPath(
+          FruitPoint(
+              id: '$randomId ${obj.id} ${obj.className}',
+              name: obj.className,
+              icon: obj.className,
+              path: cu,
+              altitude: realWorldPosition.altitude.toInt(),
+              tracked: DateTime.now()),
+          imageBytes: null // TODO: add image bytes if available in jpg
+          );
     }
   }
 }

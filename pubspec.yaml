@@ -18,6 +18,8 @@ dependencies:
   firebase_core: ^2.24.2
   geolocator: ^14.0.2
   firebase_storage: ^11.6.5
+  image: ^4.5.4
+
 
 dev_dependencies:
   flutter_test:
