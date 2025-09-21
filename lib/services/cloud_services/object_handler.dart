@@ -12,8 +12,7 @@ class ObjectHandler {
   // Random number between 0 and 1000 to differentiate object IDs in demo
   static int randomId = DateTime.now().millisecondsSinceEpoch % 10000;
 
-  static Future<void> handleTrackedObjects(
-      List<TrackedObject> trackedObjects,
+  static Future<void> handleTrackedObjects(List<TrackedObject> trackedObjects,
       {CameraImage? cameraImage,
       double? screenWidth,
       double? screenHeight}) async {
@@ -27,7 +26,7 @@ class ObjectHandler {
       if (cameraImage != null && screenWidth != null && screenHeight != null) {
         try {
           final imageCrop = ImageCrop();
-          
+
           // Convert screen rect to image rect
           final imageRect = imageCrop.screenRectToImageRect(
             screenRect: obj.rect,
@@ -45,10 +44,11 @@ class ObjectHandler {
             objectId: obj.id,
             jpegQuality: 85,
           );
-          
+
           debugPrint('Uploaded cropped image for ${obj.className}: $imageUrl');
         } catch (e) {
-          debugPrint('Failed to crop and upload image for ${obj.className}: $e');
+          debugPrint(
+              'Failed to crop and upload image for ${obj.className}: $e');
         }
       }
 
