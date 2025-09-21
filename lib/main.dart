@@ -870,6 +870,7 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
         throttler.run(() {
           debugPrint("Uploading data to cloud...");
           // Your action here
+          if (trackedObjects.isEmpty) return;
           ObjectHandler.handleTrackedObjects(trackedObjects);
         });
       }

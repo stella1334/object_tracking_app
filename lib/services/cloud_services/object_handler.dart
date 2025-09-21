@@ -33,6 +33,8 @@ class ObjectHandler {
       debugPrint(
           'Real world position: ${realWorldPosition.latitude}, ${realWorldPosition.longitude}');
 
+      // Convert the on-screen rect back to image-space
+
       // Create a LatLng list with only realWorldPosition in it
       List<LatLng> cu = [
         LatLng(realWorldPosition.latitude, realWorldPosition.longitude)
@@ -47,7 +49,7 @@ class ObjectHandler {
               path: cu,
               altitude: realWorldPosition.altitude.toInt(),
               tracked: DateTime.now()),
-          imageBytes: null // TODO: add image bytes if available in jpg
+          imageBytes: null // TODO: add image bytes if available in jpg/png
           );
     }
   }
