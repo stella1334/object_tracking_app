@@ -860,7 +860,7 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
         List<TrackedObject> updatedTracks = tracker.update(
             recognitions,
             MediaQuery.of(context).size.width,
-            MediaQuery.of(context).size.height * 0.8);
+            MediaQuery.of(context).size.height * 0.9);
 
         setState(() {
           this.recognitions = recognitions;
@@ -871,7 +871,12 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
           debugPrint("Uploading data to cloud...");
           // Your action here
           if (trackedObjects.isEmpty) return;
-          ObjectHandler.handleTrackedObjects(trackedObjects);
+          ObjectHandler.handleTrackedObjects(
+            trackedObjects,
+            cameraImage: image,
+            screenWidth: MediaQuery.of(context).size.width,
+            screenHeight: MediaQuery.of(context).size.height * 0.8,
+          );
         });
       }
     } catch (e) {
@@ -909,14 +914,14 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
         children: [
           Container(
             width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.8,
+            height: MediaQuery.of(context).size.height * 0.9,
             child: Stack(
               children: [
                 CameraPreview(_controller),
                 if (trackedObjects.isNotEmpty)
                   Enhanced3DBoundingBoxes(
                     trackedObjects: trackedObjects,
-                    screenH: MediaQuery.of(context).size.height * 0.8,
+                    screenH: MediaQuery.of(context).size.height * 0.9,
                     screenW: MediaQuery.of(context).size.width,
                     show3DInfo: show3DInfo,
                   ),
@@ -939,25 +944,25 @@ class _RealTimeObjectDetectionState extends State<RealTimeObjectDetection> {
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                onPressed: toggleCamera,
-                icon: Icon(Icons.camera_front, size: 30),
-              ),
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    show3DInfo = !show3DInfo;
-                  });
-                },
-                icon: Icon(
-                    show3DInfo ? Icons.view_in_ar : Icons.view_in_ar_outlined,
-                    size: 30),
-              ),
-            ],
-          )
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //   children: [
+          //     IconButton(
+          //       onPressed: toggleCamera,
+          //       icon: Icon(Icons.camera_front, size: 30),
+          //     ),
+          //     IconButton(
+          //       onPressed: () {
+          //         setState(() {
+          //           show3DInfo = !show3DInfo;
+          //         });
+          //       },
+          //       icon: Icon(
+          //           show3DInfo ? Icons.view_in_ar : Icons.view_in_ar_outlined,
+          //           size: 30),
+          //     ),
+          //   ],
+          // )
         ],
       ),
     );
